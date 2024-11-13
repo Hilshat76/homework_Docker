@@ -1,6 +1,6 @@
 from django.db import models
 
-from users.models import User
+from config.settings import AUTH_USER_MODEL
 
 NULLABLE = {"blank": True, "null": True}
 
@@ -9,7 +9,7 @@ class Course(models.Model):
     title = models.CharField(max_length=100, verbose_name="Название")
     preview = models.ImageField(upload_to='course/preview', verbose_name="Превью", **NULLABLE)
     description = models.TextField(verbose_name="Описание", **NULLABLE)
-    owner = models.ForeignKey(User, verbose_name="Владелец", on_delete=models.CASCADE, null=True)
+    owner = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Владелец курса", **NULLABLE)
 
     class Meta:
         verbose_name = "Курс"
