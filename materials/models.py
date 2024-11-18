@@ -25,6 +25,7 @@ class Lesson(models.Model):
     description = models.TextField(verbose_name="Описание", **NULLABLE)
     linc_to_video = models.CharField(max_length=150, verbose_name="Ссылка на видео", **NULLABLE)
     course = models.ForeignKey(Course, verbose_name="Курс", on_delete=models.CASCADE, null=True, related_name="lessons")
+    owner = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Владелец курса", **NULLABLE)
 
     class Meta:
         verbose_name = "Урок"
