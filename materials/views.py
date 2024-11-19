@@ -41,9 +41,9 @@ class LessonCreateAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         """Привязывает курс к пользователю при создании нового урока через API."""
-        course = serializer.save()
-        course.owner = self.request.user
-        course.save()
+        lesson = serializer.save()
+        lesson.owner = self.request.user
+        lesson.save()
 
 
 class LessonListAPIView(generics.ListCreateAPIView):
