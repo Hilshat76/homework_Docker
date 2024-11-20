@@ -4,7 +4,12 @@
     "pk": 1,
     "fields": {
       "name": "moders",
-      "permissions": []
+      "permissions": [
+        30,
+        32,
+        34,
+        36
+      ]
     }
   }
 ]
