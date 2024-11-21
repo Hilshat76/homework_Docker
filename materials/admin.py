@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from materials.models import Course, Lesson, Subscription
+from materials.models import Course, Lesson
 
 
 @admin.register(Course)
@@ -13,8 +13,3 @@ class CourseAdmin(admin.ModelAdmin):
 class LessonAdmin(admin.ModelAdmin):
     list_display = ('title', 'pk', 'preview', 'description', 'linc_to_video', 'course')
     list_filter = ('title', 'course',)
-
-
-@admin.register(Subscription)
-class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'user', 'course')
