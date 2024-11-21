@@ -1,13 +1,17 @@
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from materials.models import Course, Lesson
-from materials.serializers import CourseSerializer, LessonSerializer, CourseDetailSerializer
+from materials.models import Course, Lesson, Subscription
+from materials.paginators import MaterialsPagination
+from materials.serializers import CourseSerializer, LessonSerializer, CourseDetailSerializer, SubscriptionSerializer
 from users.permissions import IsModer, IsOwner
 
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
+    pagination_class = MaterialsPagination
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -49,6 +53,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
 class LessonListAPIView(generics.ListCreateAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    pagination_class = MaterialsPagination
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
@@ -66,3 +71,24 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
 class LessonDestroyAPIView(generics.DestroyAPIView):
     queryset = Lesson.objects.all()
     permission_classes = (IsAuthenticated, ~IsModer | IsOwner)
+
+
+class SubscriptionAPIView(APIView):
+    serializer_class = SubscriptionSerializer
+    queryset = Subscription.objects.all()
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        user = request.user
+        course_id = request.data.get("course_id")
+        course_item = generics.get_object_or_404(Course, id=course_id)
+        subs_item = Subscription.objects.filter(user=user, course=course_item)
+
+        if subs_item.exists():
+            subs_item.delete()
+            massage = "Подписка удалена"
+        else:
+            Subscription.objects.create(user=user, course=course_item)
+            massage = "Подписка добавлена"
+        return Response({"message": massage}, status=status.HTTP_200_OK)
+
