@@ -1,11 +1,13 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import OrderingFilter
+from rest_framework import viewsets, generics
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import RetrieveAPIView, CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from users.models import Payment, User
 from users.permissions import IsUser
 from users.serializers import PaymentSerializer, UserSerializer, UserNotOwnerSerializer
+from users.services import create_stripe_product, convert_currency, create_stripe_price, create_stripe_session
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -52,11 +54,41 @@ class UserDestroyAPIView(DestroyAPIView):
     permission_classes = (IsAuthenticated, IsUser)
 
 
-class PaymentViewSet(ModelViewSet):
+class PaymentViewSet(viewsets.ModelViewSet):
     """Позволяет автоматически реализовать стандартные методы CRUD для модели Payment"""
 
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    filterset_fields = ('payment_course', 'payment_lesson', 'payment_method',)
-    ordering_fields = ("payment_date",)
+    filterset_fields = ('course', 'lesson', 'method_payment',)
+    ordering_fields = ("date_payment",)
+
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        product_id = create_stripe_product(payment)
+        price = create_stripe_price(payment.amount, product_id)
+        session_id, link_payment = create_stripe_session(price)
+        payment.session_id = session_id
+        payment.link_payment = link_payment
+        payment.save()
+
+# class PaymentListAPIView(generics.ListAPIView):
+#     serializer_class = PaymentSerializer
+#     queryset = Payment.objects.all()
+#     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+#     filterset_fields = ('course', 'lesson', 'method_payment',)
+#     ordering_fields = ('date',)
+#
+#
+# class PaymentCreateAPIView(generics.CreateAPIView):
+#     serializer_class = PaymentSerializer
+#     queryset = Payment.objects.all()
+#
+#     def perform_create(self, serializer):
+#         payment = serializer.save(user=self.request.user)
+#         product_id = create_stripe_product(payment)
+#         price = create_stripe_price(payment.amount, product_id)
+#         session_id, payment_link = create_stripe_session(price)
+#         payment.session_id = session_id
+#         payment.link_payment = payment_link
+#         payment.save()

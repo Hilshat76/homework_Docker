@@ -39,6 +39,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
+    """ Создание урока """
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, ~IsModer]
@@ -51,24 +52,28 @@ class LessonCreateAPIView(generics.CreateAPIView):
 
 
 class LessonListAPIView(generics.ListCreateAPIView):
+    """ Просмотр списка уроков """
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     pagination_class = MaterialsPagination
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
+    """ Просмотр конкретного урока """
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = (IsAuthenticated, IsModer | IsOwner)
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
+    """ Редактирование урока """
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = (IsAuthenticated, IsModer | IsOwner)
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
+    """ Удаление урока """
     queryset = Lesson.objects.all()
     permission_classes = (IsAuthenticated, ~IsModer | IsOwner)
 
