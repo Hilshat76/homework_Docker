@@ -18,6 +18,7 @@ class IsOwner(permissions.BasePermission):
 
 
 class IsUser(permissions.BasePermission):
+    """Проверка, совпадает ли почта объекта, к которому осуществляется доступ, с почтой текущего пользователя."""
 
     def has_object_permission(self, request, view, obj):
         if obj.email == request.user.email:

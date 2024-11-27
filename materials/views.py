@@ -7,6 +7,7 @@ from materials.models import Course, Lesson, Subscription
 from materials.paginators import MaterialsPagination
 from materials.serializers import CourseSerializer, LessonSerializer, CourseDetailSerializer, SubscriptionSerializer
 from users.permissions import IsModer, IsOwner
+from materials.tasks import update_message
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -23,6 +24,11 @@ class CourseViewSet(viewsets.ModelViewSet):
         course = serializer.save()
         course.owner = self.request.user
         course.save()
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        update_message.delay(instance.pk)
+        return instance
 
     def get_permissions(self):
         """Проверка является ли пользователь(модератором, собственником, просто пользователем),
@@ -51,7 +57,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
         lesson.save()
 
 
-class LessonListAPIView(generics.ListCreateAPIView):
+class LessonListAPIView(generics.ListAPIView):
     """ Просмотр списка уроков """
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
@@ -96,4 +102,3 @@ class SubscriptionAPIView(APIView):
             Subscription.objects.create(user=user, course=course_item)
             massage = "Подписка добавлена"
         return Response({"message": massage}, status=status.HTTP_200_OK)
-

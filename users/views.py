@@ -1,13 +1,12 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, generics
-from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework import viewsets
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import RetrieveAPIView, CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.viewsets import ModelViewSet
 from users.models import Payment, User
 from users.permissions import IsUser
 from users.serializers import PaymentSerializer, UserSerializer, UserNotOwnerSerializer
-from users.services import create_stripe_product, convert_currency, create_stripe_price, create_stripe_session
+from users.services import create_stripe_product, create_stripe_price, create_stripe_session
 
 
 class UserCreateAPIView(CreateAPIView):
