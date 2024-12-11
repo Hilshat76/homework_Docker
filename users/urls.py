@@ -20,7 +20,7 @@ urlpatterns = [
     path("users/", UserListAPIView.as_view(), name="users"),
     path("user/<int:pk>/", UserRetrieveAPIView.as_view(), name="user_retrieve"),
     path("user/<int:pk>/update/", UserUpdateAPIView.as_view(), name="user_update"),
-    path("user/<int:pk>/delete/", UserDestroyAPIView.as_view(), name="user_retrieve"),
+    path("user/<int:pk>/delete/", UserDestroyAPIView.as_view(), name="user_delete"),
 
     path('login/', TokenObtainPairView.as_view(permission_classes=(AllowAny,)), name='login'),
     path('token/refresh/', TokenRefreshView.as_view(permission_classes=(AllowAny,)), name='token_refresh'),
