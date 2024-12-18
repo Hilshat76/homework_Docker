@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "homework-drf"
+name = "homework-Docker"
 version = "0.1.0"
 description = ""
 authors = ["Hilshat76"]
